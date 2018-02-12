@@ -4,3 +4,6 @@ venv
 
 # Python interpreter files
 __pycache__
+
+# Output files
+animation-*
