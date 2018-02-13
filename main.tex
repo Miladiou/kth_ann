@@ -1,0 +1,383 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{tikz}
+\usepackage{graphicx}
+
+\usetheme{default}
+
+
+% Includes KTH logo
+\pgfdeclareimage[height = 1.4cm]{university-logo}{KTH_white.png}
+\logo{\pgfuseimage{university-logo}}
+
+% Defines background color for frame and main titles
+\definecolor{bleudefrance}{rgb}{0.19, 0.55, 0.91}
+
+\setbeamercolor{frametitle}{fg=white,bg=bleudefrance}
+\setbeamercolor{title}{fg=white,bg=bleudefrance}
+
+\title{DD2437 - Artificial Neural Networks and Deep Architectures}
+
+\subtitle{Lab-1 : Feed-Forward Networks}
+
+\author{Clément Morin, Kevin Dallatorre, Rémi Lacombe}
+
+
+\date{$14^{th}$ February 2018}
+
+\subject{Neural Networks}
+
+
+\begin{document}
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}{Part II - Time-Series Prediction}
+    
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.23]{time_serie.png}
+    \caption{Mackey-Glass time serie's approximation using Euler's method. 1500 iterations have been performed.}
+    \end{figure}
+
+\end{frame}
+
+
+\begin{frame}{Part II - Time-Series Prediction}
+    
+    \begin{itemize}
+        \item Simulations conducted with Keras.
+        \item Normal initialisation of weights and biases with $\mu=0$ and $\sigma=\frac{1}{\sqrt{N}}$ , N being $\#$ of nodes for the corresponding layer.
+        \item Batch backprop learning.
+        \item $50\%$ of training data used for validation.
+        \item Early stopping realised after 10 epochs without major update.
+        \item MSE for loss functions.
+        \item Learning rate $\eta=0.01$ for stochastic gradient descent.
+        \item ReLU mostly used for activation functions. 
+    \end{itemize}
+    
+\end{frame}
+
+
+\begin{frame}{Part II.1 - Two-layer Perceptrons}
+    
+    \begin{table}[H]
+    \footnotesize
+    \begin{center}
+    % These two lines change the stretch of the table.
+    \bgroup
+    \def\arraystretch{1}
+    \begin{tabular}{|l|l|l|l|l|} \hline
+    $\#$ first layer & $\#$ hidden layer & Epochs & Generalisation MSE & Time\\ \hline
+    2 & 2 & 18 & 0.01751 & 2.53 \\ \hline
+    3 & 3 & 45 & 0.01308 & 5.65 \\ \hline
+    4 & 4 & 39 & 0.00189 & 5.78 \\ \hline
+    5 & 5 & 33 & 0.00174 & 4.59 \\ \hline
+    6 & 6 & 43 & 0.00280 & 7.73 \\ \hline
+    7 & 7 & 35 & 0.00163 & 4.85 \\ \hline
+    8 & 8 & 36 & 0.00152 & 4.98 \\ \hline
+    8 & 5 & 42 & 0.00156 & 5.62 \\ \hline
+    5 & 8 & 72 & 0.00157 & 9.46 \\ \hline
+    6 & 4 & 36 & 0.00168 & 5.28 \\ \hline
+    \end{tabular}
+    \end{center}
+    \caption{Validation performances for different network configurations.}
+\end{table}
+
+We select the 8-8-1 configuration for further evaluation.  
+    
+\end{frame}
+
+
+\begin{frame}{Part II.1 - Two-layer Perceptrons}
+
+% Columns environment useful as hell to create beamer slides ! 
+
+Early interruption to avoid unnecessary training. The process stops after 10 epochs if the validation loss did not decrease by at least 0.0003:
+
+  \begin{columns}[T]
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{loss_function_no_early.png}
+    \caption{Training and validation loss functions for a 8-8-1 network with no early interruption.}
+    \end{figure}
+    \end{block}
+    \end{column}
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{loss_functions.png}
+    \caption{Training and validation loss functions for a 8-8-1 network with early interruption.}
+    \end{figure}
+    \end{block}
+    \end{column}
+  \end{columns}
+    
+\end{frame}
+
+
+\begin{frame}{Part II.1 - Two-layer Perceptrons}
+    
+    Adding a weight decay parameter ($L_2$ norm with $\lambda=0.01$) to the loss function to avoid overfitting:
+    
+  \begin{columns}[T]
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{regularization_001.png}
+    \caption{Loss functions with added weight decay with $\lambda=0.01$ for a 8-8-1 network.}
+    \end{figure}
+    \end{block}
+    \end{column}
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{regularization_01.png}
+    \caption{Loss functions with added weight decay with $\lambda=0.1$ for a 8-8-1 network.}
+    \end{figure}
+    \end{block}
+    \end{column}
+  \end{columns}
+    
+\end{frame}
+
+
+\begin{frame}{Part II.1 - Two-layer Perceptrons}
+    
+    Comparison between ReLU and sigmoid for the choice of the the activation functions:
+    
+  \begin{columns}[T]
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{loss_functions.png}
+    \caption{Loss functions for ReLU activation functions.}
+    \end{figure}
+    \end{block}
+    \end{column}
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{sigmoid_loss.png}
+    \caption{Loss functions for sigmoid activation functions.}
+    \end{figure}
+    \end{block}
+    \end{column}
+  \end{columns}
+    
+\end{frame}
+
+
+\begin{frame}{Part II.1 - Two-layer Perceptrons}
+    
+    Results on the test set:
+    
+  \begin{columns}[T]
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{relu_test.png}
+    \caption{Plot on the test set with ReLU activation functions.}
+    \end{figure}
+    \end{block}
+    \end{column}
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{sigmoid_test.png}
+    \caption{Plot on the test set with sigmoid activation functions.}
+    \end{figure}
+    \end{block}
+    \end{column}
+  \end{columns}
+  
+  The corresponding MSE are 0.0017 (ReLU) and 0.0083 \\ (sigmoid). 
+    
+\end{frame}
+
+
+\begin{frame}{Part II.2 - Three-layer Perceptrons}
+    
+    \begin{table}[H]
+    \footnotesize
+    \begin{center}
+    % These two lines change the stretch of the table.
+    \bgroup
+    \def\arraystretch{1.5}
+    \begin{tabular}{|l|l|l|l|l|} \hline
+    $\sigma$ & $\#$ nodes second hidden layer & Epochs & Generalisation MSE & Time\\ \hline
+     0.03 & 2 & 74 & 0.00480 & 10.27 \\ \hline
+      & 5 & 56 & 0.00515 & 7.96 \\ \hline
+      & 8 & 84 & 0.00489 & 12.86 \\ \hline
+     0.09 & 2 & 61 & 0.02033 & 8.67 \\ \hline
+      & 5 & 51 & 0.01866 & 6.92 \\ \hline
+      & 8 & 66 & 0.01846 & 14.08 \\ \hline
+     0.18 & 2 & 64 & 0.06292 & 10.63 \\ \hline
+      & 5 & 62 & 0.06284 & 8.56 \\ \hline
+      & 8 & 45 & 0.06385 & 6.26 \\ \hline
+    \end{tabular}
+    \end{center}
+    \caption{Validation performances for various architectures of the second hidden layers for standard deviations of the added Gaussian noise of \\ $0.03$, $0.09$ and $0.18$.}
+    \end{table}
+    
+\end{frame}
+
+
+\begin{frame}{Part II.2 - Three-layer Perceptrons}
+    
+    More chaotic variations of loss functions when Gaussian noise is added:
+    
+  \begin{columns}[T]
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{three_loss_009.png}
+    \caption{Loss functions with early interruption and $\sigma=0.09$ for the added Gaussian noise.}
+    \end{figure}
+    \end{block}
+    \end{column}
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{three_loss_018(1).png}
+    \caption{Loss functions with early interruption and $\sigma=0.18$ for the added Gaussian noise.}
+    \end{figure}
+    \end{block}
+    \end{column}
+  \end{columns}
+    
+\end{frame}
+
+
+\begin{frame}{Part II.2 - Three-layer Perceptrons}
+    
+  Regularisation ($L_2$ norm with $\lambda=0.01$) helps prevent overfitting when $\sigma=0.18$:
+
+  \begin{columns}[T]
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{three_loss_018.png}
+    \caption{Loss functions without regularisation.}
+    \end{figure}
+    \end{block}
+    \end{column}
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{three_regularization_001_018.png}
+    \caption{Loss functions with added weight decay of parameter $\lambda=0.01$.}
+    \end{figure}
+    \end{block}
+    \end{column}
+  \end{columns}
+    
+\end{frame}
+
+
+\begin{frame}{Part II.2 - Three-layer Perceptrons}
+    
+    \begin{table}[H]
+    \footnotesize
+    \begin{center}
+    % These two lines change the stretch of the table.
+    \bgroup
+    \def\arraystretch{1.5}
+    \begin{tabular}{|l|l|l|l|} \hline
+    $\sigma$ & Network architecture & MSE on test set & Time \\ \hline
+    0.03 & 8-8-1 & 0.00495 & 12.27 \\ \hline 
+    & 8-8-5-1 & 0.00462 & 10.56 \\ \hline
+    0.09 & 8-8-1 & 0.01881 & 8.08 \\ \hline
+    & 8-8-5-1 & 0.02544 & 9.88 \\ \hline
+    0.18 & 8-8-1 & 0.06636 & 9.95 \\ \hline
+    & 8-8-8-1 & 0.06304 & 8.83 \\ \hline
+    \end{tabular}
+    \end{center}
+    \caption{Test performances for various network architectures for standard deviations of the added Gaussian noise of $0.03$, $0.09$ and $0.18$. No regularisation has been added.}
+    \end{table}
+    
+\end{frame}
+
+
+\begin{frame}{Part II.2 - Three-layer Perceptrons}
+    
+    Results on the test set with $\sigma=0.09$:
+    
+  \begin{columns}[T]
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{two_test_009.png}
+    \caption{Plot of the test set for a 8-8-1 network with added Gaussian noise of parameter $\sigma=0.09$.}
+    \end{figure}
+    \end{block}
+    \end{column}
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{three_test_009.png}
+    \caption{Plot of the test set for a 8-8-5-1 network with added Gaussian noise of parameter $\sigma=0.09$.}
+    \end{figure}
+    \end{block}
+    \end{column}
+  \end{columns}
+  
+  The corresponding MSE are: 0.01799 (two-layer network) and 0.02296 (three-layer network).
+    
+\end{frame}
+
+
+\begin{frame}{Part II.2 - Three-layer Perceptrons}
+    
+    Results on the test set with $\sigma=0.18$:
+    
+  \begin{columns}[T]
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{two_test_018.png}
+    \caption{Plot of the test set for a 8-8-1 network with added Gaussian noise of parameter $\sigma=0.18$.}
+    \end{figure}
+    \end{block}
+    \end{column}
+    \begin{column}{.5\textwidth}
+    \begin{block}{}
+    \begin{figure} [H]
+    \centering
+    \includegraphics[scale = 0.25]{three_test_018.png}
+    \caption{Plot of the test set for a 8-8-8-1 network with added Gaussian noise of parameter $\sigma=0.18$.}
+    \end{figure}
+    \end{block}
+    \end{column}
+  \end{columns}
+    
+  The corresponding MSE are: 0.07932 (two-layer network) and 0.07019 (three-layer network).
+    
+\end{frame}
+
+
+\end{document}
+
+
